@@ -52,37 +52,41 @@ const main = async () => {
   await loadPlugins(agent);
 
   discordEventEmitter.on("message", async (message) => {
-    console.log("New message event received:", message.content);
+    try {
+      console.log("New message event received:", message.content);
 
-    const response = await generateText({
-      model: openai("gpt-4o"),
-      prompt: `
-        You are ${agent.name}. Your personality is: ${agent.personality}.
-        Your system prompt is: ${
-          agent.system
-        }. Use your tools for github, filesystem, and discord.
-        New message request from user: "${message.content}" Do the request.
-        Respond to the message in the channel: ${message.channel.id}.
-        Use a series of tools to respond to the message. Always output response into Discord.
-        Your previous messages are: ${JSON.stringify(
-          messageHistory
-        )}. Follow the conversation history.
-        `,
-      tools: agentTools,
-      maxSteps: 10,
-    });
-    messageHistory.push({
-      role: "user",
-      content: message.content,
-    });
-    messageHistory.push(
-      response.response.messages.map((m) => {
-        return {
-          role: "assistant",
-          content: m.content,
-        };
-      })
-    );
+      const response = await generateText({
+        model: openai("gpt-4o"),
+        prompt: `
+          You are ${agent.name}. Your personality is: ${agent.personality}.
+          Your system prompt is: ${
+            agent.system
+          }. Use your tools for github, filesystem, and discord.
+          New message request from user: "${message.content}" Do the request.
+          Respond to the message in the channel: ${message.channel.id}.
+          Use a series of tools to respond to the message. Always output response into Discord.
+          Your previous messages are: ${JSON.stringify(
+            messageHistory
+          )}. Follow the conversation history.
+          `,
+        tools: agentTools,
+        maxSteps: 10,
+      });
+      messageHistory.push({
+        role: "user",
+        content: message.content,
+      });
+      messageHistory.push(
+        response.response.messages.map((m) => {
+          return {
+            role: "assistant",
+            content: m.content,
+          };
+        })
+      );
+    } catch (error) {
+      console.error("Error processing message:", error);
+    }
   });
 };
 
