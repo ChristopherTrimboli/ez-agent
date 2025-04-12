@@ -43,6 +43,14 @@ const loadPlugins = async (agent: Agent) => {
         ...tools,
       };
     }
+    if (plugins.includes("nasa")) {
+      const { getNasaTools } = await import("./plugins/nasa.js");
+      const tools = await getNasaTools();
+      agentTools = {
+        ...agentTools,
+        ...tools,
+      };
+    }
   } catch (error) {
     console.error("Error loading plugins:", error);
   }
@@ -59,12 +67,11 @@ const main = async () => {
         model: openai("gpt-4o"),
         prompt: `
           You are ${agent.name}. Your personality is: ${agent.personality}.
-          Your system prompt is: ${
-            agent.system
-          }. Use your tools for github, filesystem, and discord.
+          Your system prompt is: ${agent.system}. Use your tools.
           New message request from user: "${message.content}" Do the request.
           Respond to the message in the channel: ${message.channel.id}.
           Use a series of tools to respond to the message. Always output response into Discord.
+          If an image, send image to Discord.
           Your previous messages are: ${JSON.stringify(
             messageHistory
           )}. Follow the conversation history.
