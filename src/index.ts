@@ -3,18 +3,36 @@ import { generateText } from "ai";
 import { elmo } from "./agents.ts";
 import dotenv from "dotenv";
 import type { Agent } from "./types/agent.d.ts";
+import { discordEventEmitter } from "./plugins/discord.ts";
 
 dotenv.config();
 
 const agent = elmo;
+
+let agentTools: Record<string, any> = {};
 
 const loadPlugins = async (agent: Agent) => {
   try {
     const { plugins } = agent;
 
     if (plugins.includes("discord")) {
-      const { runDiscordPlugin } = await import("./plugins/discord.ts");
+      const { runDiscordPlugin, getDiscordTools } = await import(
+        "./plugins/discord.ts"
+      );
       await runDiscordPlugin(agent);
+      const tools = await getDiscordTools();
+      agentTools = {
+        ...agentTools,
+        ...tools,
+      };
+    }
+    if (plugins.includes("github")) {
+      const { getGithubTools } = await import("./plugins/github.ts");
+      const tools = await getGithubTools();
+      agentTools = {
+        ...agentTools,
+        ...tools,
+      };
     }
   } catch (error) {
     console.error("Error loading plugins:", error);
@@ -24,14 +42,22 @@ const loadPlugins = async (agent: Agent) => {
 const main = async () => {
   await loadPlugins(agent);
 
-  const { text } = await generateText({
-    model: openai("gpt-4o"),
-    prompt: `
-      You are ${agent.name}. Your personality is: ${agent.personality}.
-      Your system prompt is: ${agent.system}. Send a welcome message to the user.`,
-  });
+  discordEventEmitter.on("message", async (message) => {
+    console.log("New message event received:", message.content);
 
-  console.log(text);
+    await generateText({
+      model: openai("gpt-4o"),
+      prompt: `
+        You are ${agent.name}. Your personality is: ${agent.personality}.
+        Your system prompt is: ${agent.system}. Use your tools for github and discord.
+        New message request from user: "${message.content}" Do the request.
+        Respond to the message in the channel: ${message.channel.id}.
+        Use a series of tools to respond to the message. Always output response into Discord.
+        `,
+      tools: agentTools,
+      maxSteps: 10,
+    });
+  });
 };
 
 main();

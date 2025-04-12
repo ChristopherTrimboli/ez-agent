@@ -1,4 +1,3 @@
-import { openai } from "@ai-sdk/openai";
 import { experimental_createMCPClient, generateText } from "ai";
 import { Client, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
@@ -6,11 +5,14 @@ import { Experimental_StdioMCPTransport } from "ai/mcp-stdio";
 import type { Agent } from "../types/agent.d.ts";
 import path from "path";
 import { fileURLToPath } from "url";
+import EventEmitter from "events";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+export const discordEventEmitter = new EventEmitter();
 
 const initDiscordMCP = async () => {
   try {
@@ -37,7 +39,9 @@ const initDiscordMCP = async () => {
 
 const discordMcp = await initDiscordMCP();
 
-export const { tools }: any = discordMcp;
+export const getDiscordTools = async (): Promise<any> => {
+  return await discordMcp.tools();
+};
 
 export const runDiscordPlugin = async (agent: Agent) => {
   const client = new Client({
@@ -55,18 +59,7 @@ export const runDiscordPlugin = async (agent: Agent) => {
   client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
-    const channelId = message.channel.id;
-
-    // Handle message
-    console.log(`Received message: ${message.content}`);
-
-    await generateText({
-      model: openai("gpt-4o"),
-      prompt: `
-        You are ${agent.name}. Your personality is: ${agent.personality}.
-        Your discord prompt is: ${agent.pluginPrompts.discord}. Respond to the message: "${message.content}". Use discordmcp tools. Respond in the channel: ${channelId}.`,
-      tools: await discordMcp.tools(),
-    });
+    discordEventEmitter.emit("message", message);
   });
 
   await client.login(process.env.DISCORD_TOKEN);
