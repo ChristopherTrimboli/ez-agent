@@ -1,0 +1,33 @@
+{
+  "name": "ez-agent",
+  "version": "1.0.0",
+  "description": "A simple AI agent framework.",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/ez-agent.git"
+  },
+  "keywords": [
+    "AI",
+    "agent",
+    "framework"
+  ],
+  "author": "cjft",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^1.3.10",
+    "ai": "^4.3.5",
+    "discord.js": "^14.18.0",
+    "dotenv": "^16.5.0"
+  }
+}
