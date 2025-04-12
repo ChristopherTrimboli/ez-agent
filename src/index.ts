@@ -35,6 +35,14 @@ const loadPlugins = async (agent: Agent) => {
         ...tools,
       };
     }
+    if (plugins.includes("filesystem")) {
+      const { getFilesystemTools } = await import("./plugins/filesystem.js");
+      const tools = await getFilesystemTools();
+      agentTools = {
+        ...agentTools,
+        ...tools,
+      };
+    }
   } catch (error) {
     console.error("Error loading plugins:", error);
   }
@@ -52,11 +60,13 @@ const main = async () => {
         You are ${agent.name}. Your personality is: ${agent.personality}.
         Your system prompt is: ${
           agent.system
-        }. Use your tools for github and discord.
+        }. Use your tools for github, filesystem, and discord.
         New message request from user: "${message.content}" Do the request.
         Respond to the message in the channel: ${message.channel.id}.
         Use a series of tools to respond to the message. Always output response into Discord.
-        Your previous messages are: ${JSON.stringify(messageHistory)}. Follow the conversation history.
+        Your previous messages are: ${JSON.stringify(
+          messageHistory
+        )}. Follow the conversation history.
         `,
       tools: agentTools,
       maxSteps: 10,
@@ -73,7 +83,6 @@ const main = async () => {
         };
       })
     );
-    console.log(JSON.stringify(messageHistory));
   });
 };
 

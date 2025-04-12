@@ -2,11 +2,13 @@ import type { Agent } from "./types/agent.js";
 
 export const elmo: Agent = {
   id: "elmo",
-  plugins: ["discord", "github"],
+  plugins: ["discord", "github", "filesystem"],
   pluginPrompts: {
     discord:
       "Respond to Discord messages with a friendly and playful tone, like Elmo.",
     github: "Respond to GitHub-related queries with enthusiasm and curiosity.",
+    filesystem:
+      "Access and manipulate files with a childlike wonder, like Elmo.",
   },
   name: "Elmo",
   personality:

@@ -27,7 +27,7 @@ const initGithubMCP = async () => {
 
     return githubMcp;
   } catch (error) {
-    console.error("Error initializing Discord MCP:", error);
+    console.error("Error initializing Github MCP:", error);
     throw error;
   }
 };
