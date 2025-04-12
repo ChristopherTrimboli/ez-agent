@@ -1,4 +1,4 @@
-import type { Agent } from "./types/agent.d.ts";
+import type { Agent } from "./types/agent.js";
 
 export const elmo: Agent = {
   id: "elmo",

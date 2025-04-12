@@ -1,9 +1,9 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
-import { elmo } from "./agents.ts";
+import { elmo } from "./agents.js";
 import dotenv from "dotenv";
-import type { Agent } from "./types/agent.d.ts";
-import { discordEventEmitter } from "./plugins/discord.ts";
+import type { Agent } from "./types/agent.js";
+import { discordEventEmitter } from "./plugins/discord.js";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ const loadPlugins = async (agent: Agent) => {
 
     if (plugins.includes("discord")) {
       const { runDiscordPlugin, getDiscordTools } = await import(
-        "./plugins/discord.ts"
+        "./plugins/discord.js"
       );
       await runDiscordPlugin(agent);
       const tools = await getDiscordTools();
@@ -27,7 +27,7 @@ const loadPlugins = async (agent: Agent) => {
       };
     }
     if (plugins.includes("github")) {
-      const { getGithubTools } = await import("./plugins/github.ts");
+      const { getGithubTools } = await import("./plugins/github.js");
       const tools = await getGithubTools();
       agentTools = {
         ...agentTools,

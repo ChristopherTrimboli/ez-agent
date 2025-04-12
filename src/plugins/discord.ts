@@ -1,8 +1,8 @@
-import { experimental_createMCPClient, generateText } from "ai";
+import { experimental_createMCPClient } from "ai";
 import { Client, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio";
-import type { Agent } from "../types/agent.d.ts";
+import type { Agent } from "../types/agent.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import EventEmitter from "events";
