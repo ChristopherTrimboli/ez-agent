@@ -51,6 +51,14 @@ const loadPlugins = async (agent: Agent) => {
         ...tools,
       };
     }
+    if (plugins.includes("fetch")) {
+      const { getFetchTools } = await import("./plugins/fetch.js");
+      const tools = await getFetchTools();
+      agentTools = {
+        ...agentTools,
+        ...tools,
+      };
+    }
   } catch (error) {
     console.error("Error loading plugins:", error);
   }
@@ -71,7 +79,6 @@ const main = async () => {
           New message request from user: "${message.content}" Do the request.
           Respond to the message in the channel: ${message.channel.id}.
           Use a series of tools to respond to the message. Always output response into Discord.
-          If an image, send image to Discord.
           Your previous messages are: ${JSON.stringify(
             messageHistory
           )}. Follow the conversation history.
