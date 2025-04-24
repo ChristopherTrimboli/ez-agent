@@ -9,7 +9,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const initSolanaMCP = async () => {
+const initMCP = async () => {
   try {
     const transport = new Experimental_StdioMCPTransport({
       command: "node",
@@ -32,8 +32,8 @@ const initSolanaMCP = async () => {
   }
 };
 
-const solanaMcp = await initSolanaMCP();
+const solanaMcp = await initMCP();
 
-export const getSolanaTools = async (): Promise<any> => {
+export const getTools = async (): Promise<any> => {
   return await solanaMcp.tools();
 };

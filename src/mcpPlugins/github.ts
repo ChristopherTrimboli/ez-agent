@@ -4,7 +4,7 @@ import { Experimental_StdioMCPTransport } from "ai/mcp-stdio";
 
 dotenv.config();
 
-const initGithubMCP = async () => {
+const initMCP = async () => {
   try {
     const transport = new Experimental_StdioMCPTransport({
       command: "docker",
@@ -32,8 +32,8 @@ const initGithubMCP = async () => {
   }
 };
 
-const githubMcp = await initGithubMCP();
+const githubMcp = await initMCP();
 
-export const getGithubTools = async (): Promise<any> => {
+export const getTools = async (): Promise<any> => {
   return await githubMcp.tools();
 };

@@ -6,11 +6,17 @@ export const generate = async ({
   prompt,
   tools,
   maxSteps,
+  providerOptions,
 }: {
   model: LanguageModelV1;
   prompt: string;
   tools: Record<string, any>;
   maxSteps: number;
+  providerOptions?: {
+    openai?: {
+      reasoningSummary?: string;
+    };
+  };
 }) => {
   try {
     const response = await generateText({

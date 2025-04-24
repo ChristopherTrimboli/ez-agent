@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Check GitHub PRs",
+    "description": "Check if there are any open pull requests in the specified GitHub repository.",
+    "icon": "github",
+    "parameters": {
+      "repository": {
+        "type": "string",
+        "description": "The GitHub repository to check for open pull requests.",
+        "default": "UpstreetAI/illegal-agents"
+      }
+    },
+    "steps": [
+      {
+        "name": "Get Open Pull Requests",
+        "action": "github.getPullRequests",
+        "parameters": {
+          "repository": "{{repository}}",
+          "state": "open"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Post to Discord",
+    "description": "Post the result of the GitHub PR check to a Discord channel.",
+    "icon": "discord",
+    "parameters": {
+      "channel": {
+        "type": "string",
+        "description": "The Discord channel to post the result to.",
+        "default": "#github"
+      },
+      "message": {
+        "type": "string",
+        "description": "The message to post to the Discord channel.",
+        "default": "{{steps.Get Open Pull Requests.result}}"
+      }
+    }
+  }
+]

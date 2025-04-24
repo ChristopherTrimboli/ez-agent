@@ -9,7 +9,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const initFetchMCP = async () => {
+const initMCP = async () => {
   try {
     const transport = new Experimental_StdioMCPTransport({
       command: "node",
@@ -27,8 +27,8 @@ const initFetchMCP = async () => {
   }
 };
 
-const fetchMcp = await initFetchMCP();
+const fetchMcp = await initMCP();
 
-export const getFetchTools = async (): Promise<any> => {
+export const getTools = async (): Promise<any> => {
   return await fetchMcp.tools();
 };

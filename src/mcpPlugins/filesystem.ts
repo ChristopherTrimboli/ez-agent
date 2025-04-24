@@ -4,7 +4,7 @@ import { Experimental_StdioMCPTransport } from "ai/mcp-stdio";
 
 dotenv.config();
 
-const initFilesystemMCP = async () => {
+const initMCP = async () => {
   try {
     const transport = new Experimental_StdioMCPTransport({
       command: "npx",
@@ -26,8 +26,8 @@ const initFilesystemMCP = async () => {
   }
 };
 
-const filesystemMcp = await initFilesystemMCP();
+const filesystemMcp = await initMCP();
 
-export const getFilesystemTools = async (): Promise<any> => {
+export const getTools = async (): Promise<any> => {
   return await filesystemMcp.tools();
 };

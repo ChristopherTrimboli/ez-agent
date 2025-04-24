@@ -4,7 +4,7 @@ import { Experimental_StdioMCPTransport } from "ai/mcp-stdio";
 
 dotenv.config();
 
-const initNasaMCP = async () => {
+const initMCP = async () => {
   try {
     const transport = new Experimental_StdioMCPTransport({
       command: "npx",
@@ -25,8 +25,8 @@ const initNasaMCP = async () => {
   }
 };
 
-const nasaMcp = await initNasaMCP();
+const nasaMcp = await initMCP();
 
-export const getNasaTools = async (): Promise<any> => {
+export const getTools = async (): Promise<any> => {
   return await nasaMcp.tools();
 };

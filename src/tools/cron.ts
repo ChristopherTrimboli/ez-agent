@@ -40,4 +40,6 @@ const cronTool = tool({
   },
 });
 
-export default cronTool;
+export const getTools = async (): Promise<Record<string, any>> => ({
+  "cron-tool": cronTool,
+});
