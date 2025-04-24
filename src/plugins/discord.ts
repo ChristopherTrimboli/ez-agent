@@ -61,7 +61,7 @@ export const runDiscordPlugin = async (agent: Agent) => {
 
     discordEventEmitter.emit("message", {
       content: message.content,
-      source: "telegram",
+      source: "discord",
     });
   });
 
