@@ -3,7 +3,7 @@ import express from "express";
 import { generate } from "../lib/generate.js";
 import { agentTools } from "../lib/tools.js";
 import { createDefaultPrompt } from "../lib/prompts.js";
-import { agent } from "src/agent.js";
+import { agent } from "../agent.js";
 
 export const startAgentServer = () => {
   const app = express();
