@@ -1,5 +1,4 @@
 import { Agent } from "src/types/agent.js";
-import { discordEventEmitter } from "../plugins/discord.js";
 
 export let agentTools: Record<string, any> = {};
 
@@ -10,9 +9,8 @@ export const loadPlugins = async (agent: Agent) => {
     const { plugins } = agent;
 
     if (plugins.includes("discord")) {
-      const { runDiscordPlugin, getDiscordTools } = await import(
-        "../plugins/discord.js"
-      );
+      const { runDiscordPlugin, getDiscordTools, discordEventEmitter } =
+        await import("../plugins/discord.js");
       await runDiscordPlugin(agent);
       const tools = await getDiscordTools();
       agentTools = {
@@ -60,6 +58,14 @@ export const loadPlugins = async (agent: Agent) => {
     if (plugins.includes("fetch")) {
       const { getFetchTools } = await import("../plugins/fetch.js");
       const tools = await getFetchTools();
+      agentTools = {
+        ...agentTools,
+        ...tools,
+      };
+    }
+    if (plugins.includes("solana")) {
+      const { getSolanaTools } = await import("../plugins/solana.js");
+      const tools = await getSolanaTools();
       agentTools = {
         ...agentTools,
         ...tools,

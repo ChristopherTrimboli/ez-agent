@@ -61,7 +61,7 @@ export const runDiscordPlugin = async (agent: Agent) => {
 
     discordEventEmitter.emit("message", {
       content: message.content,
-      source: "discord",
+      source: `discord-${message.channel.id}`,
     });
   });
 
