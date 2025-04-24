@@ -1,4 +1,4 @@
-type AgentPlugin = "discord" | "github" | "filesystem" | "nasa" | "fetch";
+type AgentPlugin = "discord" | "github" | "filesystem" | "nasa" | "fetch" | "telegram"
 
 export interface Agent {
   id: string;

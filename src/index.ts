@@ -13,25 +13,30 @@ const main = async () => {
   await loadPlugins(agent);
 
   Object.values(agentToolsListeners).forEach((listener: any) => {
-    listener.on("message", async (message: any) => {
-      try {
-        console.log("New message event received:", message.content);
+    listener.on(
+      "message",
+      async (message: { content: string; source: string }) => {
+        try {
+          console.log("New message event received:", message);
 
-        await generate({
-          model: openai("gpt-4o"),
-          prompt:
-            defaultPrompt +
-            `\n\n${message.content} Respond to the message above, following the conversation history.`,
-          tools: {
-            ...agentTools,
-            cronTool,
-          },
-          maxSteps: 10,
-        });
-      } catch (error) {
-        console.error("Error processing message:", error);
+          await generate({
+            model: openai("gpt-4o"),
+            prompt:
+              defaultPrompt +
+              `\n\n${message.content} Respond to the message above, following the conversation history. 
+              This message came from ${message.source}. Use the tools for the platform source.
+              `,
+            tools: {
+              ...agentTools,
+              cronTool,
+            },
+            maxSteps: 10,
+          });
+        } catch (error) {
+          console.error("Error processing message:", error);
+        }
       }
-    });
+    );
   });
 };
 

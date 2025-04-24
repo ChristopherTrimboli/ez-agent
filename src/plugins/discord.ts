@@ -59,7 +59,10 @@ export const runDiscordPlugin = async (agent: Agent) => {
   client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
-    discordEventEmitter.emit("message", message);
+    discordEventEmitter.emit("message", {
+      content: message.content,
+      source: "telegram",
+    });
   });
 
   await client.login(process.env.DISCORD_TOKEN);

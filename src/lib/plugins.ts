@@ -21,6 +21,18 @@ export const loadPlugins = async (agent: Agent) => {
       };
       agentToolsListeners.discord = discordEventEmitter;
     }
+    if (plugins.includes("telegram")) {
+      const { telegramTool, startTelegramTool, telegramEventEmitter } =
+        await import("../tools/telegram.js");
+      await startTelegramTool();
+      agentTools = {
+        ...agentTools,
+        ...{
+          "telegram-send-message": telegramTool,
+        },
+      };
+      agentToolsListeners.telegram = telegramEventEmitter;
+    }
     if (plugins.includes("github")) {
       const { getGithubTools } = await import("../plugins/github.js");
       const tools = await getGithubTools();
