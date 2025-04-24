@@ -71,6 +71,13 @@ export const loadPlugins = async (agent: Agent) => {
         ...tools,
       };
     }
+    if (plugins.includes("cron")) {
+      const cronTool = await import("../tools/cron.js");
+      agentTools = {
+        ...agentTools,
+        ...cronTool,
+      };
+    }
   } catch (error) {
     console.error("Error loading plugins:", error);
   }

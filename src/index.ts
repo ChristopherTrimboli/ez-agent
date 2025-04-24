@@ -2,7 +2,6 @@ import { openai } from "@ai-sdk/openai";
 import dotenv from "dotenv";
 import { generate } from "./lib/generate.js";
 import { agentTools, agentToolsListeners, loadPlugins } from "./lib/plugins.js";
-import cronTool from "./tools/cron.js";
 import { defaultPrompt } from "./lib/prompts.js";
 import { agent } from "./lib/agent.js";
 import { startAgentServer } from "./api/server.js";
@@ -28,7 +27,6 @@ const main = async () => {
               `,
             tools: {
               ...agentTools,
-              cronTool,
             },
             maxSteps: 10,
           });

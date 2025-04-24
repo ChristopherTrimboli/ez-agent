@@ -5,7 +5,8 @@ type AgentPlugin =
   | "nasa"
   | "fetch"
   | "telegram"
-  | "solana";
+  | "solana"
+  | "cron";
 
 export interface Agent {
   id: string;
