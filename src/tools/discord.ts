@@ -23,6 +23,7 @@ export const startTool = async (agent: Agent) => {
       intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.DirectMessages,
       ],
@@ -173,21 +174,124 @@ const readMessagesTool = tool({
         description: "Number of messages to fetch (max 100)",
         default: 50,
       },
+      query: {
+        type: "string",
+        description: "Optional: search for messages containing this text",
+      },
     },
     required: ["channelId", "limit"],
   }),
 
   execute: async (args: any) => {
     const limit = Math.min(args.limit ?? 50, 100);
-    // Filter cached messages by channelId
-    const messages = messageCache
-      .filter((msg) => msg.channelId === args.channelId)
-      .slice(-limit);
+    const channel = await client.channels.fetch(args.channelId);
+    if (!channel || !("messages" in channel)) {
+      throw new Error("Channel not found or does not support messages");
+    }
+    // Fetch recent messages from Discord API
+    const fetched = await channel.messages.fetch({ limit });
+    let messages = Array.from(fetched.values()).map((msg) => ({
+      id: msg.id,
+      content: msg.content,
+      author: msg.author.username,
+      authorId: msg.author.id,
+      timestamp: msg.createdTimestamp,
+    }));
+
+    // If a query is provided, filter messages by content
+    if (args.query) {
+      messages = messages.filter((m) =>
+        m.content.toLowerCase().includes(args.query.toLowerCase())
+      );
+    }
+
     return { messages };
+  },
+});
+
+const searchUsersTool = tool({
+  description:
+    "Search for a Discord user by username and return their userId (searches all guilds the bot is in).",
+  parameters: jsonSchema({
+    type: "object",
+    properties: {
+      username: {
+        type: "string",
+        description:
+          "The username to search for (case-insensitive, not unique).",
+      },
+    },
+    required: ["username"],
+  }),
+
+  execute: async (args: any) => {
+    const search = args.username.toLowerCase();
+
+    // 1. Search in the client's user cache (fast)
+    let found = client.users.cache.find(
+      (user) => user.username.toLowerCase() === search
+    );
+    if (found) {
+      return {
+        userId: found.id,
+        username: found.username,
+        discriminator: found.discriminator,
+        tag: `${found.username}#${found.discriminator}`,
+        matchType: "exact",
+      };
+    }
+
+    // 2. Search all guilds (fetch all members)
+    for (const guild of client.guilds.cache.values()) {
+      // Fetch all members (forces API call if not cached)
+      let members;
+      try {
+        members = await guild.members.fetch();
+      } catch (e) {
+        continue; // skip guilds where fetch fails
+      }
+      // Find exact match (case-insensitive)
+      let member = members.find(
+        (m) => m.user.username.toLowerCase() === search
+      );
+      if (member) {
+        return {
+          userId: member.user.id,
+          username: member.user.username,
+          discriminator: member.user.discriminator,
+          tag: `${member.user.username}#${member.user.discriminator}`,
+          guildId: guild.id,
+          guildName: guild.name,
+          matchType: "exact-guild",
+        };
+      }
+      // Find partial matches (case-insensitive)
+      const partialMatches = members.filter((m) =>
+        m.user.username.toLowerCase().includes(search)
+      );
+      if (partialMatches.size > 0) {
+        return {
+          matches: partialMatches.map((m) => ({
+            userId: m.user.id,
+            username: m.user.username,
+            discriminator: m.user.discriminator,
+            tag: `${m.user.username}#${m.user.discriminator}`,
+            guildId: guild.id,
+            guildName: guild.name,
+          })),
+          matchType: "partial-guild",
+        };
+      }
+    }
+
+    throw new Error(
+      "User not found in any guild. Usernames are not unique; try using userId if possible."
+    );
   },
 });
 
 export const getTools = async (): Promise<Record<string, any>> => ({
   "discord-send-message": sendMessageTool,
   "discord-read-messages": readMessagesTool,
+  "discord-search-users": searchUsersTool,
 });
