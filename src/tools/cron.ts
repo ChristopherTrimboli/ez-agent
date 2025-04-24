@@ -2,6 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import { jsonSchema, tool } from "ai";
 import { CronJob } from "cron";
 import { generate } from "../lib/generate.js";
+import { agent } from "../agent.js";
 
 const cronTool = tool({
   description: "Run the given prompt at the specified ISO time",
@@ -15,21 +16,28 @@ const cronTool = tool({
       },
       prompt: {
         type: "string",
-        description: "The prompt text to execute at that time",
+        description: "The prompt text to execute at that time.",
       },
     },
     required: ["cronPattern", "prompt"],
   }),
 
   execute: async (args: any) => {
+    console.log("Cron job started with pattern:", args.cronPattern);
+    console.log("Prompt to execute:", args.prompt);
     new CronJob(
       args.cronPattern,
       async function () {
         await generate({
-          model: openai("gpt-4o"),
+          model: openai(agent.model),
           prompt: `run this:\n\n${args.prompt} Follow the conversation history.`,
           tools: {},
           maxSteps: 10,
+          providerOptions: {
+            openai: {
+              reasoningSummary: "detailed",
+            },
+          },
         });
       },
       null,

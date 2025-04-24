@@ -56,9 +56,14 @@ export const startTool = async (agent: Agent) => {
         channelId
       );
 
-      if (message.content) {
+      if (
+        message.content &&
+        message.content
+          .toLocaleLowerCase()
+          .includes(agent.name.toLocaleLowerCase())
+      ) {
         await generate({
-          model: openai("o4-mini", {
+          model: openai(agent.model, {
             structuredOutputs: false,
           }),
           prompt:
@@ -290,8 +295,46 @@ const searchUsersTool = tool({
   },
 });
 
+const deleteMessageTool = tool({
+  description:
+    "Delete a message in a Discord channel by channelId and messageId.",
+  parameters: jsonSchema({
+    type: "object",
+    properties: {
+      channelId: {
+        type: "string",
+        description: "The ID of the Discord channel containing the message.",
+      },
+      messageId: {
+        type: "string",
+        description: "The ID of the message to delete.",
+      },
+    },
+    required: ["channelId", "messageId"],
+  }),
+
+  execute: async (args: any) => {
+    const channel = await client.channels.fetch(args.channelId);
+    if (!channel || !("messages" in channel)) {
+      throw new Error("Channel not found or does not support messages");
+    }
+    try {
+      const message = await channel.messages.fetch(args.messageId);
+      await message.delete();
+      return {
+        status: "deleted",
+        channelId: args.channelId,
+        messageId: args.messageId,
+      };
+    } catch (err) {
+      throw new Error("Failed to delete message: " + (err as Error).message);
+    }
+  },
+});
+
 export const getTools = async (): Promise<Record<string, any>> => ({
   "discord-send-message": sendMessageTool,
   "discord-read-messages": readMessagesTool,
   "discord-search-users": searchUsersTool,
+  "discord-delete-message": deleteMessageTool,
 });

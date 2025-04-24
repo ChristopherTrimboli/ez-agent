@@ -29,6 +29,9 @@ importers:
       telegraf:
         specifier: ^4.16.3
         version: 4.16.3
+      tiktoken:
+        specifier: ^1.0.21
+        version: 1.0.21
       zod:
         specifier: ^3.24.3
         version: 3.24.3
@@ -591,6 +594,9 @@ packages:
   throttleit@2.1.0:
     resolution: {integrity: sha512-nt6AMGKW1p/70DF/hGBdJB57B8Tspmbp5gfJ8ilhLnt7kkr2ye7hzD6NVG8GGErk2HWF34igrL2CXmNIkzKqKw==}
     engines: {node: '>=18'}
+
+  tiktoken@1.0.21:
+    resolution: {integrity: sha512-/kqtlepLMptX0OgbYD9aMYbM7EFrMZCL7EoHM8Psmg2FuhXoo/bH64KqOiZGGwa6oS9TPdSEDKBnV2LuB8+5vQ==}
 
   toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
@@ -1282,6 +1288,8 @@ snapshots:
       - supports-color
 
   throttleit@2.1.0: {}
+
+  tiktoken@1.0.21: {}
 
   toidentifier@1.0.1: {}
 

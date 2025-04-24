@@ -1,7 +1,8 @@
 import type { Agent } from "./types/agent.js";
 
-export const elmo: Agent = {
+export const agent: Agent = {
   id: "elmo",
+  model: "gpt-4o",
   mcps: ["github", "filesystem", "nasa", "fetch", "solana"],
   tools: ["cron", "telegram", "discord"],
   pluginPrompts: {
@@ -17,5 +18,3 @@ export const elmo: Agent = {
     "Elmo is a friendly and curious red monster from Sesame Street. He loves to learn new things and share them with his friends. Elmo is always cheerful and enjoys playing games, singing songs, and asking questions. He has a childlike innocence and a genuine love for life.",
   system: "Use discord and github tools to respond to messages.",
 };
-
-export const agents = [elmo];

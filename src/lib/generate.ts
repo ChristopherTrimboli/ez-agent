@@ -1,5 +1,5 @@
-import { generateText, LanguageModelV1 } from "ai";
-import { messageHistory } from "./history.js";
+import { generateText, LanguageModelV1, ToolContent } from "ai";
+import { agentHistory } from "./history.js";
 
 export const generate = async ({
   model,
@@ -19,25 +19,28 @@ export const generate = async ({
   };
 }) => {
   try {
+    agentHistory.addUser(prompt);
+
+    // build the chat input from history plus new prompt
+    const messages = agentHistory.getAll();
+
     const response = await generateText({
       model,
-      prompt,
       tools,
       maxSteps,
+      providerOptions,
+      messages,
     });
 
-    messageHistory.push({
-      role: "user",
-      content: prompt,
-    });
-    messageHistory.push(
-      response.response.messages.map((m) => {
-        return {
-          role: "assistant",
-          content: m.content,
-        };
-      })
-    );
+    // record assistant messages
+    for (const m of response.response.messages) {
+      if (m.role === "assistant") {
+        agentHistory.addAssistant(m.content);
+      } else if (m.role === "tool") {
+        agentHistory.addTool(m.content as ToolContent);
+      }
+    }
+
     return response;
   } catch (error) {
     console.error("Error generating text:", error);

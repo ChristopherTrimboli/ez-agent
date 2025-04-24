@@ -35,7 +35,7 @@ export const startTool = async (agent: Agent) => {
         if (message) {
           console.log("Emitting message event:", message);
           await generate({
-            model: openai("o4-mini", {
+            model: openai(agent.model, {
               structuredOutputs: false,
             }),
             prompt:

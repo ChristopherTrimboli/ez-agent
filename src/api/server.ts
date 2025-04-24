@@ -3,6 +3,7 @@ import express from "express";
 import { generate } from "../lib/generate.js";
 import { agentTools } from "../lib/tools.js";
 import { createDefaultPrompt } from "../lib/prompts.js";
+import { agent } from "src/agent.js";
 
 export const startAgentServer = () => {
   const app = express();
@@ -21,7 +22,7 @@ export const startAgentServer = () => {
       const agentId = event.agentId;
 
       const result = await generate({
-        model: openai("gpt-4o"),
+        model: openai(agent.model),
         prompt:
           createDefaultPrompt(agentId) +
           `\n\n${message} Respond to the message above, following the conversation history.`,
