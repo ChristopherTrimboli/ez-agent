@@ -29,7 +29,9 @@ const cronTool = tool({
       args.cronPattern,
       async function () {
         await generate({
-          model: openai(agent.model),
+          model: openai(agent.model, {
+            structuredOutputs: false,
+          }),
           prompt: `run this:\n\n${args.prompt} Follow the conversation history.`,
           tools: {},
           maxSteps: 10,
